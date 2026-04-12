@@ -212,7 +212,7 @@ jupyter notebook Optimization_Main.ipynb
     -   Mathematical formulation
     -   Exact method implementation (PuLP)
     -   Constraint modeling
--   **Member 2:**
+-   **Member 2 (Aloka):**
     -   Data preprocessing
     -   Genetic Algorithm implementation
     -   Visualization
