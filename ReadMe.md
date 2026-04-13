@@ -1,232 +1,209 @@
-# 📈 HFT Strategy Optimization: Exact vs. Metaheuristic Approaches
+# HFT Strategy Optimization: Exact vs. Metaheuristic Approaches
 
 ## 1. Project Overview
 
-This project focuses on solving a real-world Finance/Tech optimization
-problem:\
-**Maximizing the risk-adjusted returns of a High-Frequency Trading (HFT)
-strategy.**
+This project solves a real-world **Finance/Tech optimization problem**:
+**Maximizing the risk-adjusted returns of a High-Frequency Trading (HFT) strategy.**
 
-We model an **Order Book Imbalance trading strategy** and compare two
-optimization approaches:
+We model an **Order Book Imbalance trading strategy** on real Binance BTC/USDT tick data and compare two optimization approaches:
 
--   ✅ **Exact Optimization** --- Integer Linear Programming (ILP) using
-    PuLP\
--   ✅ **Metaheuristic Optimization** --- Genetic Algorithm (GA) using
-    PyGAD
+- **Exact Optimization** — Branch & Bound with Recursive Zoom
+- **Metaheuristic Optimization** — Genetic Algorithm (GA) using PyGAD
 
-### 🎯 Objective
+### Objective
 
-Maximize the **Sharpe Ratio** of the trading strategy:
+Maximize the **annualized Sharpe Ratio**:
 
-Z = (E\[Rₚ − R_f\]) / σₚ
+```
+S = (E[Rp - Rf]) / sigma_p  *  sqrt(bars_per_day * 365)
+```
 
-Where: - Rₚ = Portfolio returns - R_f = Risk-free rate - σₚ = Standard
-deviation of portfolio returns
+Where Rp = portfolio returns, Rf = risk-free rate, sigma_p = return volatility.
 
-------------------------------------------------------------------------
+---
 
 ## 2. Dataset Description
 
--   **Source:** Kaggle -- Cryptocurrency Real-Time Market Data\
--   **Frequency:** 1-second interval tick data\
--   **Format:** CSV
+- **Source:** Binance Public Data API (`https://data.binance.vision`)
+- **Asset:** BTC/USDT Aggregated Trades
+- **Frequency:** 1-second interval tick data (resampled from raw trade data)
+- **Date:** 2024-01-01
+- **Type:** Real-world data, downloaded programmatically in the notebook
 
-### 📊 Features Used
+### Features Used
 
--   Timestamp\
--   Bid Price\
--   Ask Price\
--   Bid Volume\
--   Ask Volume
+| Feature | Description |
+|---|---|
+| Mid Price | (Last trade price per 1-second bar) |
+| Buy Volume | Aggregated taker-buy volume per bar |
+| Sell Volume | Aggregated taker-sell (maker) volume per bar |
+| Order Book Imbalance | (Buy Vol - Sell Vol) / (Buy Vol + Sell Vol) |
+| Mid Price Returns | Percentage change of mid price |
 
-### 🔎 Feature Engineering
-
--   Mid Price = (Bid + Ask) / 2\
--   Order Book Imbalance = (Bid Volume − Ask Volume) / (Bid Volume + Ask
-    Volume)\
--   Strategy Returns\
--   Transaction Costs\
--   Maximum Drawdown
-
-------------------------------------------------------------------------
+---
 
 ## 3. Mathematical Formulation
 
-### 🔢 Decision Variables
+### Decision Variables
 
--   **T** → Threshold for Order Book Imbalance\
--   **L** → Stop-loss percentage\
--   **P** → Take-profit percentage
+| Variable | Description | Domain |
+|:---:|---|---|
+| T | Order Book Imbalance Threshold | (0.01, 1.0] |
+| L | Stop-Loss percentage | (0.1, 10.0] % |
+| P | Take-Profit percentage | (0.1, 20.0] % |
 
-### 🎯 Objective Function
+### Objective Function
 
-Maximize:
+Maximize: `S(T, L, P) = annualized Sharpe Ratio`
 
-Z = Sharpe Ratio
+### Constraints
 
-### 📌 Constraints
+| Constraint | Condition | Rationale |
+|---|---|---|
+| Risk Control | Max Drawdown <= 10% | Prevents catastrophic capital erosion |
+| Cost Efficiency | Transaction Costs <= 20% of Gross Profit | Ensures profitability net of fees |
+| Statistical Significance | Trade Count >= 50 | Guards against overfitting |
 
--   Maximum Drawdown ≤ 5%\
--   Total Transaction Costs ≤ 10% of Gross Profit\
--   Logical parameter bounds:
-    -   0 \< T ≤ 1
-    -   0 \< L ≤ 10%
-    -   0 \< P ≤ 20%
-
-------------------------------------------------------------------------
+---
 
 ## 4. Optimization Approaches
 
-### 🔵 Exact Method -- Integer Linear Programming (PuLP)
+### Exact Method — Branch & Bound with Recursive Zoom
 
--   Discretized search space
--   Guarantees global optimum within discretized bounds
--   Slower for large search spaces
--   Deterministic results
+- Discretizes the 3D parameter space into a grid (branching)
+- Evaluates all grid points via backtesting (bounding)
+- Prunes all regions except the best neighborhood (pruning)
+- Recursively refines the grid around the incumbent solution (zoom)
+- Guarantees global optimum within grid resolution
+- Deterministic results
 
-### 🟢 Metaheuristic -- Genetic Algorithm (PyGAD)
+### Metaheuristic — Genetic Algorithm (PyGAD)
 
--   Population-based search
--   Evolves candidate solutions over 50--100 generations
--   Faster exploration of large search spaces
--   May converge to near-optimal solution
+- Population-based search with 20 individuals
+- Tournament selection, single-point crossover, random mutation
+- Evolves over 50 generations with early stopping
+- Constraints enforced via penalty-based fitness function
+- Explores continuous space between grid points
+- May converge to near-optimal solution
 
-------------------------------------------------------------------------
+---
 
 ## 5. Experimental Evaluation
 
-We compare:
+We compare across multiple dimensions:
 
--   Runtime
--   Final Sharpe Ratio
--   Convergence Speed
--   Stability of Results
+- **Solution Quality**: Sharpe Ratio, Net Profit, Win Rate
+- **Risk Metrics**: Max Drawdown, Transaction Costs
+- **Runtime**: Wall-clock seconds for each method
+- **Scalability**: Runtime and solution quality vs. dataset size (10% to 100%)
+- **Convergence**: How quickly each method finds good solutions
+- **Constraint Satisfaction**: Feasibility of final solutions
 
-### 📈 Expected Insights
-
--   ILP provides higher precision for small search spaces.
--   GA scales better for continuous and large parameter domains.
--   Trade-off between computational efficiency and optimality guarantee.
-
-------------------------------------------------------------------------
+---
 
 ## 6. Setup and Installation
 
-### 🔧 Prerequisites
+### Prerequisites
 
--   Python 3.10+
--   Jupyter Notebook
+- Python 3.10+
+- Jupyter Notebook
 
-### 📦 Install Dependencies
+### Install Dependencies
 
-``` bash
-pip install pandas numpy matplotlib pulp pygad jupyter
+```bash
+pip install pandas numpy matplotlib seaborn scipy pulp pygad requests jupyter
 ```
 
-### 📂 Dataset Setup
+### Run the Notebook
 
-1.  Download dataset from Kaggle.
-2.  Place the CSV file inside:
-
-```{=html}
-<!-- -->
-```
-    /data
-
-### ▶️ Run the Notebook
-
-``` bash
+```bash
 jupyter notebook Optimization_Main.ipynb
 ```
 
-------------------------------------------------------------------------
+The notebook automatically downloads the Binance dataset on first run.
 
-## 7. Execution Workflow
+---
 
-1.  **Data Preprocessing**
-    -   Clean tick data
-    -   Compute imbalance feature
-    -   Calculate returns and drawdown
-2.  **Exact Method Section**
-    -   Run PuLP optimization
-    -   Retrieve optimal parameters
-3.  **Genetic Algorithm Section**
-    -   Initialize population
-    -   Evolve over generations
-    -   Track convergence
-4.  **Visualization & Comparison**
-    -   Plot convergence curves
-    -   Compare runtime
-    -   Compare Sharpe ratios
+## 7. Project Structure
 
-------------------------------------------------------------------------
+```
+hft-optimization/
+│
+├── data/                        # Auto-downloaded Binance tick data
+│   └── BTCUSDT-aggTrades-*.csv
+│
+├── Optimization_Main.ipynb      # Main notebook (all code + analysis)
+├── ReadMe.md                    # This file
+├── members.txt                  # Group member details
+├── submission.txt               # Submission metadata
+└── .gitignore
+```
 
-## 8. Project Structure
+---
 
-    hft-optimization/
-    │
-    ├── data/
-    │   └── crypto_data.csv
-    │
-    ├── Optimization_Main.ipynb
-    ├── Report.pdf
-    ├── members.txt
-    ├── submission.txt
-    └── README.md
+## 8. Notebook Sections
 
-------------------------------------------------------------------------
+1. **Import Libraries** — Dependencies and reproducibility setup
+2. **Load & Explore Dataset** — Download Binance data, preprocess
+3. **Exploratory Data Analysis** — Statistical properties, distributions, autocorrelation
+4. **Mathematical Formulation** — Formal optimization problem definition
+5. **Backtesting Engine** — Vectorized strategy simulator
+6. **Branch & Bound (Exact)** — Recursive zoom optimization
+7. **Genetic Algorithm (GA)** — PyGAD metaheuristic optimization
+8. **Results Comparison** — Tables, charts, radar plots, equity curves
+9. **Scalability Analysis** — Runtime and quality vs. data size
+10. **Complexity & NP-Hardness** — Theoretical discussion
+11. **Summary & Key Findings** — Trade-offs and future work
+12. **Individual Contributions** — Per-member task breakdown
 
-## 9. Performance Considerations
+---
 
--   Vectorized computations using NumPy for speed
--   Avoided look-ahead bias in return calculation
--   Transaction cost modeling included
--   Reproducibility ensured via random seed control in GA
+## 9. Key Results
 
-------------------------------------------------------------------------
+| Metric | Branch & Bound (Exact) | Genetic Algorithm |
+|---|---|---|
+| Search Type | Discrete, deterministic | Continuous, stochastic |
+| Optimality | Global within grid resolution | Near-optimal (no formal guarantee) |
+| Scalability | Exponential in dimensions | Linear in dimensions |
+| Constraint Handling | Post-hoc penalty | Embedded in fitness |
 
-## 10. Limitations
+---
 
--   Backtesting assumes perfect liquidity
--   No slippage modeling
--   Sharpe Ratio assumes normal return distribution
--   ILP discretization limits continuous precision
+## 10. Individual Contributions
 
-------------------------------------------------------------------------
+- **Member 1 (Didula — MS25948592):**
+  - Problem modeling & mathematical formulation
+  - Branch & Bound (Exact method) implementation
+  - Backtesting engine design
+  - Scalability analysis
+  - Constraint modeling
 
-## 11. Future Improvements
+- **Member 2 (Aloka — MS25951608):**
+  - Data sourcing & preprocessing
+  - Genetic Algorithm implementation (PyGAD)
+  - EDA & visualization
+  - Video presentation
+  - Report formatting
 
--   Add Bayesian Optimization
--   Include slippage modeling
--   Multi-objective optimization (Sharpe + Drawdown)
--   Walk-forward validation
--   Parallel GA execution
+---
 
-------------------------------------------------------------------------
+## 11. Limitations
 
-## 12. Individual Contributions
+- Backtesting assumes perfect liquidity (no slippage)
+- Sharpe Ratio assumes approximately normal return distribution
+- B&B discretization limits continuous precision
+- GA results may vary slightly between runs (mitigated by seed control)
 
--   **Member 1 (Didula):**
-    -   Problem modeling
-    -   Mathematical formulation
-    -   Exact method implementation (PuLP)
-    -   Constraint modeling
--   **Member 2 (Aloka):**
-    -   Data preprocessing
-    -   Genetic Algorithm implementation
-    -   Visualization
-    -   Video presentation
+## 12. Future Improvements
 
-------------------------------------------------------------------------
+- Walk-Forward Analysis for out-of-sample validation
+- Bayesian Optimization (e.g., Optuna) for sample efficiency
+- Monte Carlo stress testing for robustness evaluation
+- Multi-Objective Optimization (NSGA-II) for Pareto frontiers
+- Position sizing as a 4th decision variable
 
-## 📜 License
+---
 
-This project is developed for academic purposes.
+## License
 
-------------------------------------------------------------------------
-
-## 📬 Contact
-
-For academic inquiries or collaboration, please contact the project
-contributors.
+This project is developed for academic purposes — Optimization Methods MSc coursework.

@@ -1,0 +1,31 @@
+Optimization Methods – Programming Assignment
+Submission Details
+=============================================
+
+Group Members:
+  Member 1: NANAYAKKARA N.G.S.D (MS25948592)
+  Member 2: KALUARACHCHI N.A. (MS25951608)
+
+Problem:
+  HFT Strategy Optimization — Maximizing the risk-adjusted returns
+  (Sharpe Ratio) of a High-Frequency Trading strategy using
+  Branch & Bound (Exact) and Genetic Algorithm (Metaheuristic).
+
+Dataset:
+  Source: Binance Public Data API (https://data.binance.vision)
+  Data: BTC/USDT Aggregated Trades, 1-second resolution
+  Date: 2024-01-01
+  Real-world data downloaded programmatically in the notebook.
+
+GitHub Repository:
+  https://github.com/SasankaDidula/hft-optimization
+
+YouTube Video:
+  
+
+Files Included:
+  - Optimization_Main.ipynb  (main notebook with all code and analysis)
+  - members.txt              (group member details)
+  - submission.txt           (this file)
+  - ReadMe.md                (project overview and setup instructions)
+  - .gitignore               (git configuration)
