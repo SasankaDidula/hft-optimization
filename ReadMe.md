@@ -201,7 +201,3 @@ hft-optimization/
 - Position sizing as a 4th decision variable
 
 ---
-
-## License
-
-This project is developed for academic purposes — Optimization Methods MSc coursework.
