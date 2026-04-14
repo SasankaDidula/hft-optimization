@@ -21,7 +21,7 @@ GitHub Repository:
   https://github.com/SasankaDidula/hft-optimization
 
 YouTube Video:
-  
+  https://youtu.be/nhhvXujf5xI
 
 Files Included:
   - Optimization_Main.ipynb  (main notebook with all code and analysis)
