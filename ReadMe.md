@@ -171,20 +171,18 @@ hft-optimization/
 
 ## 10. Individual Contributions
 
-- **Member 1 (Didula — MS25948592):**
-  - Problem modeling & mathematical formulation
-  - Branch & Bound (Exact method) implementation
-  - Backtesting engine design
-  - Scalability analysis
-  - Constraint modeling
+- **Member 1 (NANAYAKKARA N.G.S.D M  - MS25948592):**
+  - Problem selection & scoping
+  - Mathematical formulation & constraints
+  - Branch & Bound implementation
+  - Back testing engine development
+  - Scalability analysis 
 
-- **Member 2 (Aloka — MS25951608):**
-  - Data sourcing & preprocessing
-  - Genetic Algorithm implementation (PyGAD)
-  - EDA & visualization
-  - Video presentation
-  - Report formatting
-
+- **Member 2 (KALUARACHCHI N.A. - MS25951608):**
+  - Binance API integration & Dataset sourcing
+  - Data preprocessing & feature engineering
+  - Genetic Algorithm (PyGAD) implementation
+  - EDA & visualization 
 ---
 
 ## 11. Limitations
@@ -203,7 +201,3 @@ hft-optimization/
 - Position sizing as a 4th decision variable
 
 ---
-
-## License
-
-This project is developed for academic purposes — Optimization Methods MSc coursework.
